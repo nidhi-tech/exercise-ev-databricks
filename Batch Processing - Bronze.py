@@ -92,12 +92,13 @@ def write(input_df: DataFrame):
     out_dir = f"{working_directory}/output/"
     
     ### YOUR CODE HERE ###
-    mode_name = None
+    mode_name = "overwrite"
     ###
     input_df. \
         write. \
         mode(mode_name). \
         parquet(out_dir)
+    
     
 write(df)
 
