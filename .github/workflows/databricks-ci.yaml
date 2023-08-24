@@ -1,22 +1,43 @@
-name: Databricks CI
+name: Run a notebook in the current repo on PR
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+
+env:
+  DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
 
 jobs:
-  build:
+  repos-notebook:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Install Databricks CLI
-      run: |
-        pip install databricks-cli
-
-    - name: Deploy to Databricks
-      run: |
-        databricks workspace import_dir notebooks /Workspace/databricks-project
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Run local notebook
+        uses: databricks/run-notebook@main
+        id: upload-repo-run
+        with:
+          local-notebook-path: tests/run_unit_tests.py
+          git-commit: "${{ github.event.pull_request.head.sha }}"
+          databricks-token: ${{ secrets.DATABRICKS_TOKEN }}
+          existing-cluster-id: "0823-121848-mjmhituw"         
+          libraries-json: >
+            [
+              {"pypi": 
+                {"package": "pytest"}
+              },
+              {"pypi":
+                {"package": "wget"}
+              }
+              ]
+          notebook-params-json: > 
+            {"run_as" : "testing"}
+          # Grant all users view permission on the notebook results, so that they can
+          # see the result of our CI notebook maybe
+          access-control-list-json: >
+            [
+              {
+                "group_name": "users",
+                "permission_level": "CAN_VIEW"
+              }
+            ]
+          run-name: "Integration test"
