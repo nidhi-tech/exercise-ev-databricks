@@ -13,5 +13,17 @@ exercise-ev-databricks/
 ├─ .gitignore
 ├─ README.md
 ```  
-## CI/CD
-we add a GitHub Actions workflow that will run our integration test whenever a pull request is made on the repo.
+## databricks-ci.yaml(CI/CD)
+This file starts the cluster and run our integration test whenever a pull request is made on the repo.
+Databricks Host and Token variables in the databricks-ci.yaml file are configured in Github actions secrets. 
+
+Configure Cluster Id in the yaml file(current cluster created in databricks environment) [Cluster URL AND ID](https://docs.databricks.com/en/workspace/workspace-details.html).
+
+Refer [using secrets in github actions](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions)
+## Useful links
+[Personal Token access for Databricks REST API](https://docs.databricks.com/en/dev-tools/auth.html)
+
+[Databricks CLI](https://docs.databricks.com/en/archive/dev-tools/cli/index.html)
+
+
+
