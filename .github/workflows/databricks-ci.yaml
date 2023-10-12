@@ -12,32 +12,35 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
-      - name: Run local notebook
-        uses: databricks/run-notebook@main
-        id: upload-repo-run
+        
+      - name: Setup Databricks environment
+        uses: databrickslabs/setup-databricks-cli@v0
         with:
-          local-notebook-path: tests/run_unit_tests.py
-          git-commit: "${{ github.event.pull_request.head.sha }}"
-          databricks-token: ${{ secrets.DATABRICKS_TOKEN }}
-          existing-cluster-id: "0823-121848-mjmhituw"         
-          libraries-json: >
-            [
-              {"pypi": 
-                {"package": "pytest"}
-              },
-              {"pypi":
-                {"package": "wget"}
-              }
-              ]
-          notebook-params-json: > 
-            {"run_as" : "testing"}
-          # Grant all users view permission on the notebook results, so that they can
-          # see the result of our CI notebook maybe
-          access-control-list-json: >
-            [
-              {
-                "group_name": "users",
-                "permission_level": "CAN_VIEW"
-              }
-            ]
-          run-name: "Integration test"
+          token: ${{ secrets.DATABRICKS_TOKEN }}
+          url: ${{ secrets.DATABRICKS_URL }}
+
+      - name: Create Databricks job
+        run: |
+          # Create the Databricks job and capture the job ID
+          job_id=$(databricks jobs create --json '{
+            "name": "MyDatabricksJob",
+            "new_cluster": {
+              "num_workers": 2, // Specify the number of workers
+              "node_type_id": "Standard_D3_v2" // Specify the node type
+            },
+            "notebook_task": {
+              "notebook_path": "/path/to/your/notebook"
+            }
+          }' | jq -r '.job_id')
+
+          echo "Databricks Job ID: $job_id"
+
+      - name: Run Databricks job
+        run: |
+          # Run the Databricks job by job ID
+          databricks jobs run-now --job-id $job_id
+
+      - name: Delete Databricks job
+        run: |
+          # Delete the Databricks job by job ID
+          databricks jobs delete --job-id $job_id
