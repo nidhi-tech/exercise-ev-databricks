@@ -6,13 +6,21 @@ exercise-ev-databricks/
 ├─ data/
 │  ├─ 1678731740.csv
 │  ├─ 1679387766.csv
-├─ notebooks/
-│  ├─ Batch Processing - Bronze.py
+├─ src/
+|  ├─ source
+|  ├─ sink
+|  ├─ transform
+|  ├─ DatabricksHelper
 ├─ tests/
-│  ├─ run_unit_tests.py
+│  ├─ test_source
+   ├─ test_transofrm
 ├─ .gitignore
+├─ requirements.txt
 ├─ README.md
-```  
+```
+## Problem Statement 
+Given data is from the software of Charge Point Simulator for Electric Vehicles (EVs). We use this data to process and calculate final charge time and final charge dispense for every completed transaction.
+
 ## databricks-ci.yaml(CI/CD)
 This file starts the cluster and run our integration test whenever a pull request is made on the repo.
 Databricks Host and Token variables in the databricks-ci.yaml file are configured in Github actions secrets. 
